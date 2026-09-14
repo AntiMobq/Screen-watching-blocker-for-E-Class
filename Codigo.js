@@ -54,7 +54,6 @@
 
         const type = getType(body);
 
-        // BLOQUEIA SOMENTE screen_switching
         if (type === "screen_switching") {
             console.warn(
                 `🚫 BLOQUEADO: ${url} | type=${type}`
@@ -68,7 +67,6 @@
 
         return false;
     }
-
 
     // FETCH
 
@@ -121,10 +119,7 @@
 
         return originalFetch.apply(this, args);
     };
-
-
-    // XMLHttpRequest
-
+    
     const originalOpen = XMLHttpRequest.prototype.open;
     const originalSend = XMLHttpRequest.prototype.send;
 
@@ -158,8 +153,6 @@
                 console.warn(
                     `🚫 XHR bloqueado: ${url} | type=${type}`
                 );
-
-                // Não chama originalSend()
                 return;
             }
 
@@ -179,8 +172,6 @@
 
         navigator.sendBeacon = function (url, data) {
             if (isTarget(url)) {
-
-                // FormData / URLSearchParams
                 const type = getType(data);
 
                 if (type === "screen_switching") {
@@ -191,8 +182,6 @@
                     return true;
                 }
 
-                // Para FormData/URLSearchParams conseguimos descobrir
-                // diretamente.
                 if (type !== null) {
                     console.log(
                         `✅ BEACON permitido: ${url} | type=${type}`
@@ -203,6 +192,4 @@
             return originalSendBeacon(url, data);
         };
     }
-
-    console.log("✅ Fetch + XHR + sendBeacon interceptados!");
 })();
